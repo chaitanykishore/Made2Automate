@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products - Product Management Website</title>
+    <link rel="stylesheet" href="/assets/All_product.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <button class="nav-button" onclick="goToPage('/home')">Home</button>
+        <button class="nav-button" onclick="goToPage('/Add_product')">Add Product</button>
+        <button class="nav-button highlighted">All Products</button>
+        <button class="nav-button" onclick="goToPage('/orders')">Orders</button>
+        <button class="nav-button" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="product-container">
+        <!-- Example product item, repeat this block for each product -->
+        <div class="product-item">
+            <img src="\uploads\productImage-1703094463720.jpg" alt="Product 1" class="product-image">
+            <div class="product-details">
+                <h3>product_name</h3>
+                <p>Product ID: 987</p>
+                <p>Manufacture:xyz</p>
+                <p>Product Details: somthing</p>
+                <p>Quantity: 98</p>
+                <!-- Add more product details as needed -->
+            </div>
+            <div class="product-buttons">
+                <button class="order-button" onclick="toggleColor(this)">Order</button>
+                <button class="cancel-button" onclick="toggleColor(this)">Cancel</button>
+            </div>
+        </div>
+        
+
+        <!-- Repeat the above product-item block for each product -->
+
+    </div>
+
+   <!-- Example product item, repeat this block for each product -->
+<div class="product-container">
+    <!-- Products will be dynamically added here -->
+</div>
+<script>
+    function toggleColor(button) {
+        var currentColor = button.style.backgroundColor || getComputedStyle(button).backgroundColor;
+        var newColor = (currentColor === 'rgb(76, 175, 80)') ? '' : '#4CAF50';
+        button.style.backgroundColor = newColor;
+    }
+</script>
+<script>
+    function orderProduct(button) {
+        button.style.backgroundColor = '#4CAF50'; // Change color after clicking
+    }
+
+    function cancelOrder(button) {
+        button.style.backgroundColor = '#f44336'; // Change color after clicking
+    }
+</script>
+
+<script>
+    function goToPage(path) {
+        window.location.href = path;
+    }
+
+    function logout() {
+        fetch('/logout', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    goToPage('/');
+                } else {
+                    console.error('Logout failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error during logout:', error);
+            });
+    }
+
+    // Fetch products from the server
+    fetch('/getAddedProducts')
+        .then(response => response.json())
+        .then(products => {
+            const productsContainer = document.querySelector('.product-container');
+
+            // Check if there are products to display
+            if (products.length > 0) {
+                // Take the first product from the array
+                const firstProduct = products[0];
+
+                // Create a product item
+                const productItem = document.createElement('div');
+                productItem.className = 'product-item';
+
+                // Create an image element for the product (replace 'productImage1.jpg' with the actual image path)
+                const productImage = document.createElement('img');
+                productImage.src = `/uploads/${firstProduct.productImage}`;
+                productImage.alt = firstProduct.productName;
+                productImage.className = 'product-image';
+
+                // Create a div for product details
+                const productDetails = document.createElement('div');
+                productDetails.className = 'product-details';
+
+                // Add product details to the div
+                productDetails.innerHTML = `
+                    <h3>${firstProduct.productName}</h3>
+                    <p>Product ID: ${firstProduct.productID}</p>
+                    <p>Manufacture: ${firstProduct.manufactureName}</p>
+                    <p>Quantity: ${firstProduct.productQuantity}</p>
+                    <!-- Add more product details as needed -->
+                `;
+
+                // Append image and details to the product item
+                productItem.appendChild(productImage);
+                productItem.appendChild(productDetails);
+
+                // Append the product item to the products container
+                productsContainer.appendChild(productItem);
+            } else {
+                // Handle the case where no products are available
+                console.log('No products available.');
+            }
+        })
+        .catch(error => console.error('Error fetching products:', error));
+</script>
+
+</body>
+</html>

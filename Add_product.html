@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - Product Management Website</title>
+    <link rel="stylesheet" href="/assets/Add_product.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <button class="nav-button" onclick="goToPage('/home')">Home</button>
+        <button class="nav-button highlighted">Add Product</button>
+        <button class="nav-button" onclick="goToPage('/All_products')">All Products</button>
+        <button class="nav-button" onclick="goToPage('/orders')">Orders</button>
+        <button class="nav-button" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="center-box">
+        <h1>Add Product</h1>
+
+        <form action="/Add_product" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="productImage">Product Image:</label>
+                <input type="file" id="productImage" name="productImage" accept="image/*" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productName">Product Name:</label>
+                <input type="text" id="productName" name="productName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productID">Product ID:</label>
+                <input type="text" id="productID" name="productID" required>
+            </div>
+
+            <div class="form-group">
+                <label for="manufactureName">Manufacture Name:</label>
+                <input type="text" id="manufactureName" name="manufactureName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productDetail">Product Detail:</label>
+                <textarea id="productDetail" name="productDetail" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="productQuantity">Product Quantity:</label>
+                <input type="number" id="productQuantity" name="productQuantity" required>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Add Product</button>
+            </div>
+        </form>
+        <!-- Add this section after the existing form -->
+<div class="added-products">
+    <h2>Added Products</h2>
+    <ul id="addedProductList"></ul>
+    <button onclick="goToPage('/Add_product')">Add Product</button>
+</div>
+
+    </div>
+
+    <script>
+        function goToPage(path) {
+            window.location.href = path;
+        }
+
+        function logout() {
+            fetch('/logout', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        goToPage('/');
+                    } else {
+                        console.error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                });
+        }
+    </script>
+  <!-- Add this script at the end of your HTML body -->
+<script>
+    // Function to fetch and display the last added product
+    async function displayLastAddedProduct() {
+        try {
+            const response = await fetch('/getAddedProducts', { method: 'GET' });
+            const lastAddedProduct = await response.json();
+
+            const addedProductList = document.getElementById('addedProductList');
+            addedProductList.innerHTML = '';
+
+            lastAddedProduct.forEach(product => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <img src="/uploads/${product.productImage}" alt="${product.productName}" width="50">
+                    <strong>${product.productName}</strong> (ID: ${product.productID})
+                    <br>
+                    Manufacture: ${product.manufactureName}, Quantity: ${product.productQuantity}
+                    <br>
+                    Detail: ${product.productDetail}
+                `;
+                addedProductList.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error('Error fetching last added products:', error);
+        }
+    }
+
+    // Call the function to display the last added product on page load
+    displayLastAddedProduct();
+</script>
+
+</body>
+</html>

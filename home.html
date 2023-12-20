@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management Website</title>
+    <link rel="stylesheet" href="/assets/home.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <button class="nav-button" onclick="goToPage('/home')">Home</button>
+        <button class="nav-button" onclick="goToPage('/All_products')">All Products</button>
+        <button class="nav-button" onclick="goToPage('/Add_product')">Add Product</button>
+        <button class="nav-button" onclick="goToPage('/orders')">Orders</button>
+        <button class="nav-button" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="center-box">
+        <h1>Product Management Website</h1>
+        <p>Made 2 Automate</p>
+    </div>
+
+    <script>
+        function goToPage(path) {
+            window.location.href = path;
+        }
+
+        function logout() {
+            fetch('/logout', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        goToPage('/');
+                    } else {
+                        console.error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                });
+        }
+        
+        // Add this function for the "Add Product" button
+        function goToAddProductPage() {
+            goToPage('/Add_product.html');
+        }
+    </script>
+
+</body>
+</html>
